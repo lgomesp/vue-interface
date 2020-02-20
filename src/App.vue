@@ -15,7 +15,8 @@ export default {
   name: "MainApp",
   data: function() {
     return {
-      appointments: []
+      appointments: [],
+      aptIndex: 0
     };
   },
   components: {
@@ -24,7 +25,11 @@ export default {
   mounted() {
     axios
       .get("./data/appointments.js")
-      .then(response => (this.appointments = response.data));
+      .then(response => (this.appointments = response.data.map(item => {
+        item.aptId = this.aptIndex;
+        this.aptIndex++;
+        return item
+      })));
   },
   methods: {
     removeItem: function(appointment) {
