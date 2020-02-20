@@ -6,13 +6,13 @@
         v-for="(item, i) in appointments"
         v-bind:key="i"
       >
-        <button class="mr-2 btn btn-sm btn-danger">
+        <button class="mr-2 btn btn-sm btn-danger" @click="$emit('remove', item)">
           <font-awesome-icon icon="trash" />
         </button>
         <div class="w-100">
           <div class="d-flex justify-content-between">
             <span class="h4 text-primary">{{item.petName}}</span>
-            <span class="float-right">{{item.aptDate}}</span>
+            <span class="float-right">{{ formattedData(item.aptDate) }}</span>
           </div>
           <div class="owner-name">
             <span class="font-weight-bold text-primary mr-1">Owner:</span>
@@ -27,12 +27,18 @@
 
 <script>
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import moment from "moment";
 
 export default {
   name: "appointment-list",
   props: ["appointments"],
   components: {
     FontAwesomeIcon
+  },
+  methods: {
+    formattedData: function(date) {
+      return moment(new Date(date)).format("DD-MM-YY, h:mm a");
+    }
   }
 };
 </script>
