@@ -2,7 +2,8 @@
   <div id="main-app" class="container">
     <div class="row justify-content-center">
       <add-apointment @add="addItem" />
-      <appointment-list :appointments="appointments" @remove="removeItem" @edit="editItem" />
+      <search-appointment @searchRecords="searchAppointments" />
+      <appointment-list :appointments="searchedApts" @remove="removeItem" @edit="editItem" />
     </div>
   </div>
 </template>
@@ -12,18 +13,21 @@ import axios from "axios";
 import _ from "lodash";
 import AppointmentList from "./components/AppointmentList";
 import AddApointment from "./components/AddAppointment";
+import SearchAppointment from "./components/SearchAppointment";
 
 export default {
   name: "MainApp",
   data: function() {
     return {
       appointments: [],
-      aptIndex: 0
+      aptIndex: 0,
+      searchTerms: ""
     };
   },
   components: {
     AppointmentList,
-    AddApointment
+    AddApointment,
+    SearchAppointment
   },
   mounted() {
     axios
@@ -33,6 +37,17 @@ export default {
         this.aptIndex++;
         return item
       })));
+  },
+  computed: {
+    searchedApts: function() {
+      return this.appointments.filter(item => {
+        return(
+          item.petName.toLowerCase().match(this.searchTerms.toLowerCase()) ||
+          item.petOwner.toLowerCase().match(this.searchTerms.toLowerCase()) ||
+          item.aptNotes.toLowerCase().match(this.searchTerms.toLowerCase())
+        )
+      });
+    }
   },
   methods: {
     removeItem: function(appointment) {
@@ -48,6 +63,9 @@ export default {
       apt.aptId = this.aptIndex;
       this.aptIndex++;
       this.appointments.push(apt);
+    },
+    searchAppointments: function(terms) {
+      this.searchTerms = terms;
     }
   }
 };
