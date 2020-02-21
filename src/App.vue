@@ -2,8 +2,14 @@
   <div id="main-app" class="container">
     <div class="row justify-content-center">
       <add-apointment @add="addItem" />
-      <search-appointment @searchRecords="searchAppointments" />
-      <appointment-list :appointments="searchedApts" @remove="removeItem" @edit="editItem" />
+      <search-appointment
+        @searchRecords="searchAppointments"
+        :myKey="filterKey"
+        :myDir="filterDir"
+        @requestKey="changeKey"
+        @requestDir="changeDir"
+      />
+      <appointment-list :appointments="filteredAppointments" @remove="removeItem" @edit="editItem" />
     </div>
   </div>
 </template>
@@ -21,7 +27,9 @@ export default {
     return {
       appointments: [],
       aptIndex: 0,
-      searchTerms: ""
+      searchTerms: "",
+      filterKey: "petName",
+      filterDir: "asc"
     };
   },
   components: {
@@ -30,23 +38,33 @@ export default {
     SearchAppointment
   },
   mounted() {
-    axios
-      .get("./data/appointments.js")
-      .then(response => (this.appointments = response.data.map(item => {
-        item.aptId = this.aptIndex;
-        this.aptIndex++;
-        return item
-      })));
+    axios.get("./data/appointments.js").then(
+      response =>
+        (this.appointments = response.data.map(item => {
+          item.aptId = this.aptIndex;
+          this.aptIndex++;
+          return item;
+        }))
+    );
   },
   computed: {
     searchedApts: function() {
       return this.appointments.filter(item => {
-        return(
+        return (
           item.petName.toLowerCase().match(this.searchTerms.toLowerCase()) ||
           item.petOwner.toLowerCase().match(this.searchTerms.toLowerCase()) ||
           item.aptNotes.toLowerCase().match(this.searchTerms.toLowerCase())
-        )
+        );
       });
+    },
+    filteredAppointments: function() {
+      return _.orderBy(
+        this.searchedApts,
+        item => {
+          return item[this.filterKey].toLowerCase();
+        },
+        this.filterDir
+      );
     }
   },
   methods: {
@@ -66,6 +84,12 @@ export default {
     },
     searchAppointments: function(terms) {
       this.searchTerms = terms;
+    },
+    changeKey: function(term) {
+      this.filterKey = term;
+    },
+    changeDir: function(term) {
+      this.filterDir = term;
     }
   }
 };
