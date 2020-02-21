@@ -16,7 +16,7 @@
               contenteditable="contenteditable"
               @blur="$emit('edit', item.aptId, 'petName', $event.target.innerText)"
             >{{ item.petName }}</span>
-            <span class="float-right">{{ formattedData(item.aptDate) }}</span>
+            <span class="float-right">{{ item.aptDate }}</span>
           </div>
           <div class="owner-name">
             <span class="font-weight-bold text-primary mr-1">Owner:</span>
@@ -37,18 +37,12 @@
 
 <script>
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import moment from "moment";
 
 export default {
   name: "appointment-list",
   props: ["appointments"],
   components: {
     FontAwesomeIcon
-  },
-  methods: {
-    formattedData: function(date) {
-      return moment(new Date(date)).format("DD-MM-YY, h:mm a");
-    }
   }
 };
 </script>

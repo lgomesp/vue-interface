@@ -17,6 +17,7 @@
 <script>
 import axios from "axios";
 import _ from "lodash";
+import moment from "moment";
 import AppointmentList from "./components/AppointmentList";
 import AddApointment from "./components/AddAppointment";
 import SearchAppointment from "./components/SearchAppointment";
@@ -43,6 +44,7 @@ export default {
         (this.appointments = response.data.map(item => {
           item.aptId = this.aptIndex;
           this.aptIndex++;
+          item.aptDate = moment(new Date(item.aptDate)).format("DD/MM/YY, h:mm a");
           return item;
         }))
     );
@@ -53,7 +55,8 @@ export default {
         return (
           item.petName.toLowerCase().match(this.searchTerms.toLowerCase()) ||
           item.petOwner.toLowerCase().match(this.searchTerms.toLowerCase()) ||
-          item.aptNotes.toLowerCase().match(this.searchTerms.toLowerCase())
+          item.aptNotes.toLowerCase().match(this.searchTerms.toLowerCase()) ||
+          item.aptDate.toLowerCase().match(this.searchTerms.toLowerCase())
         );
       });
     },
